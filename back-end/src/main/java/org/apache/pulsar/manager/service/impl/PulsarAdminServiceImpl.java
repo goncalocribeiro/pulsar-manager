@@ -31,6 +31,7 @@ import org.apache.pulsar.client.admin.PulsarAdmin;
 import org.apache.pulsar.client.admin.PulsarAdminBuilder;
 import org.apache.pulsar.client.admin.Tenants;
 import org.apache.pulsar.client.admin.Topics;
+import org.apache.pulsar.client.admin.internal.PulsarAdminImpl;
 import org.apache.pulsar.client.api.Authentication;
 import org.apache.pulsar.client.api.AuthenticationDataProvider;
 import org.apache.pulsar.client.api.AuthenticationFactory;
@@ -123,7 +124,7 @@ public class PulsarAdminServiceImpl implements PulsarAdminService {
     }
 
     public Map<String, String> getAuthHeader(String url) {
-        Authentication authentication = getPulsarAdmin(url).getClientConfigData().getAuthentication();
+        Authentication authentication = ((PulsarAdminImpl) getPulsarAdmin(url)).getClientConfigData().getAuthentication();
         Map<String, String> result = new HashMap<>();
 
         try {

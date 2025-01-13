@@ -11,7 +11,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.pulsar.manager.service;
 
-include 'front-end'
-include 'back-end'
+import com.google.common.collect.Maps;
 
+import java.util.Map;
+
+public interface NamespacesService {
+
+    Map<String, Object> getNamespaceList(
+            Integer pageNum, Integer pageSize, String tenant, String requestHost);
+
+    Map<String, Object> getNamespaceStats(String tenant, String namespace, String env);
+}

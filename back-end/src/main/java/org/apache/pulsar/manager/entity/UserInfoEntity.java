@@ -11,7 +11,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.pulsar.manager.entity;
 
-include 'front-end'
-include 'back-end'
+import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+/**
+ * User information entity.
+ */
+@Getter
+@Setter
+@NoArgsConstructor
+@Data
+public class UserInfoEntity {
+    private long userId;
+    private String name;
+    private String password;
+    private String description;
+    private String location;
+    private String company;
+    private String phoneNumber;
+    private String email;
+    private String accessToken;
+    private long expire;
+}

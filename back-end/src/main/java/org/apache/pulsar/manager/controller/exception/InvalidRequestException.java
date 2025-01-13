@@ -11,7 +11,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.pulsar.manager.controller.exception;
 
-include 'front-end'
-include 'back-end'
+import org.springframework.validation.Errors;
 
+@SuppressWarnings("serial")
+public class InvalidRequestException extends RuntimeException {
+    private final Errors errors;
+
+    public InvalidRequestException(Errors errors) {
+        super("");
+        this.errors = errors;
+    }
+
+    public Errors getErrors() {
+        return errors;
+    }
+}

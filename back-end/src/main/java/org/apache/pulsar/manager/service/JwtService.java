@@ -11,7 +11,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.pulsar.manager.service;
 
-include 'front-end'
-include 'back-end'
+import java.util.Optional;
 
+public interface JwtService {
+
+    String toToken(String id);
+
+    Optional<String> getSubFromToken(String token);
+
+    String createBrokerToken(String role, String expiryTime);
+
+    void setToken(String key, String value);
+
+    String getToken(String key);
+
+    void removeToken(String key);
+}

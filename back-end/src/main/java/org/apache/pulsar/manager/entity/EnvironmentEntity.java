@@ -11,7 +11,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.pulsar.manager.entity;
 
-include 'front-end'
-include 'back-end'
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+/**
+ * Environment entity.
+ */
+@Getter
+@Setter
+@NoArgsConstructor
+public class EnvironmentEntity {
+    private String name;
+    private String broker;
+    private String bookie;
+    private String token;
+}

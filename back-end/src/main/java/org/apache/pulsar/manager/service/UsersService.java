@@ -11,7 +11,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.pulsar.manager.service;
 
-include 'front-end'
-include 'back-end'
+import org.apache.pulsar.manager.entity.UserInfoEntity;
 
+import java.util.Map;
+
+public interface UsersService {
+
+    Map<String, String> validateUserInfo(UserInfoEntity userInfoEntity);
+
+}

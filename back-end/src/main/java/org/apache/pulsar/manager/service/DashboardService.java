@@ -11,7 +11,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.pulsar.manager.service;
 
-include 'front-end'
-include 'back-end'
+import java.util.List;
+import java.util.Map;
 
+public interface DashboardService {
+    Map<String, Object> getDashboardStats(List<String> environmentList);
+}

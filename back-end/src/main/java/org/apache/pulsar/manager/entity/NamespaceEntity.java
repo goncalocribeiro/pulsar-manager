@@ -11,7 +11,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.pulsar.manager.entity;
 
-include 'front-end'
-include 'back-end'
+import com.google.gson.annotations.SerializedName;
+import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@Getter
+@Setter
+@NoArgsConstructor
+@Data
+public class NamespaceEntity {
+
+    @SerializedName("namespace_id")
+    private long namespaceId;
+
+    private String tenant;
+    private String namespace;
+}

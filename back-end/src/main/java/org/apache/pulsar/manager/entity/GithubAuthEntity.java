@@ -11,7 +11,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.pulsar.manager.entity;
 
-include 'front-end'
-include 'back-end'
+import com.google.gson.annotations.SerializedName;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+/**
+ * Github auth information entity.
+ */
+@Getter
+@Setter
+@NoArgsConstructor
+public class GithubAuthEntity {
+
+    @SerializedName("access_token")
+    private String accessToken;
+
+    @SerializedName("token_type")
+    private String token_type;
+
+    private String scope;
+}

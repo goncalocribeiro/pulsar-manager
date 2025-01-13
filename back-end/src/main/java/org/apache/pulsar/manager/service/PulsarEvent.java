@@ -11,7 +11,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.pulsar.manager.service;
 
-include 'front-end'
-include 'back-end'
+import javax.servlet.http.HttpServletRequest;
+import java.util.Map;
 
+public interface PulsarEvent {
+
+    void parsePulsarEvent(String path, HttpServletRequest httpRequest);
+
+}

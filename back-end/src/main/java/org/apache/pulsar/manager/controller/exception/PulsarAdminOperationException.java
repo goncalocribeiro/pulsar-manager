@@ -11,7 +11,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.pulsar.manager.controller.exception;
 
-include 'front-end'
-include 'back-end'
-
+@SuppressWarnings("serial")
+public class PulsarAdminOperationException extends RuntimeException {
+    public PulsarAdminOperationException(String message) {
+        super(message);
+    }
+}

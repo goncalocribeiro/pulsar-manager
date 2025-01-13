@@ -11,7 +11,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.pulsar.manager.service.impl;
 
-include 'front-end'
-include 'back-end'
+import org.apache.pulsar.manager.service.PermissionsService;
 
+public class PermissionsServiceImpl implements PermissionsService {
+
+    public boolean hasPermissions(String path) {
+        return false;
+    }
+
+}

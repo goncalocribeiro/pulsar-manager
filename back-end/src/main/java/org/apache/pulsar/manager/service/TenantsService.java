@@ -11,7 +11,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.pulsar.manager.service;
 
-include 'front-end'
-include 'back-end'
+import org.springframework.stereotype.Service;
 
+import java.util.Map;
+
+@Service
+public interface TenantsService {
+
+    Map<String, Object> getTenantsList(
+            Integer pageNum, Integer pageSize, String requestHost);
+
+    Map<String, String> createTenant(String tenant, String role, String cluster, String requestHost);
+}

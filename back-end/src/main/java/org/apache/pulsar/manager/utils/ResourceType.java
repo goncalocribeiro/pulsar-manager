@@ -11,7 +11,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.pulsar.manager.utils;
 
-include 'front-end'
-include 'back-end'
-
+/**
+ * Type of resource, references https://github.com/apache/pulsar/wiki/PIP-49%3A-Permission-levels-and-inheritance
+ */
+public enum ResourceType {
+    ALL,
+    CLUSTERS,
+    BROKERS,
+    NS_ISOLATION_POLICY,
+    FAILURE_DOMAIN,
+    TENANTS,
+    NAMESPACES,
+    TOPICS,
+    FUNCTIONS,
+    SOURCES,
+    SINKS,
+    SCHEMAS,
+    ROLES,
+    ROLE_BINDING
+}

@@ -11,7 +11,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.pulsar.manager.entity;
 
-include 'front-end'
-include 'back-end'
+import com.github.pagehelper.Page;
+import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
+@Repository
+public interface BrokerTokensRepository {
+
+    long save(BrokerTokenEntity brokerTokenEntity);
+
+    void update(BrokerTokenEntity brokerTokenEntity);
+
+    void remove(String role);
+
+    Optional<BrokerTokenEntity> findTokenByRole(String role);
+
+    Page<BrokerTokenEntity> getBrokerTokensList(Integer pageNum, Integer pageSize);
+}

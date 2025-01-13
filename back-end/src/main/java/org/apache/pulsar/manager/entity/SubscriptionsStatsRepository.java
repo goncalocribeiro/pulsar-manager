@@ -11,7 +11,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.pulsar.manager.entity;
 
-include 'front-end'
-include 'back-end'
+import com.github.pagehelper.Page;
+import org.springframework.stereotype.Repository;
 
+@Repository
+public interface SubscriptionsStatsRepository {
+
+    long save(SubscriptionStatsEntity subscriptionStatsEntity);
+
+    Page<SubscriptionStatsEntity> findByTopicStatsId(Integer pageNum, Integer pageSize,
+                                                     long topicStatsId, long timestamp);
+
+    void remove(long timestamp, long timeInterval);
+}

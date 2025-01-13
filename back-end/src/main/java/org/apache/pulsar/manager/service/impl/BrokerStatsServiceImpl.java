@@ -13,9 +13,13 @@
  */
 package org.apache.pulsar.manager.service.impl;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.pagehelper.Page;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 
 import java.text.DecimalFormat;
@@ -82,6 +86,7 @@ public class BrokerStatsServiceImpl implements BrokerStatsService {
     private final ReplicationsStatsRepository replicationsStatsRepository;
     private final ConsumersStatsRepository consumersStatsRepository;
     private final PulsarAdminService pulsarAdminService;
+    private final ObjectMapper objectMapper;
 
     @Autowired
     public BrokerStatsServiceImpl(
@@ -103,6 +108,7 @@ public class BrokerStatsServiceImpl implements BrokerStatsService {
         this.replicationsStatsRepository = replicationsStatsRepository;
         this.consumersStatsRepository = consumersStatsRepository;
         this.pulsarAdminService = pulsarAdminService;
+        this.objectMapper = new ObjectMapper();
     }
 
     public String forwardBrokerStatsMetrics(String broker, String requestHost) {
@@ -179,7 +185,8 @@ public class BrokerStatsServiceImpl implements BrokerStatsService {
             JsonObject result;
             try {
                 log.info("Start collecting stats from broker {}", finalBroker);
-                result = pulsarAdminService.brokerStats(finalBroker, env).getTopics();
+                result = JsonParser.parseString(pulsarAdminService.brokerStats(finalBroker, env).getTopics()).getAsJsonObject();
+
             } catch(PulsarAdminException e) {
                 log.error("Failed to get broker metrics.", e);
                 return;

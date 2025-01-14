@@ -86,7 +86,7 @@ public class EmbeddedTomcatCustomizer implements
                                     log.info("Deploying BKVM to " + bkvmDirectory.getAbsolutePath());
                                     unZip(bkvmWar, bkvmDirectory);
                                     Context context = tomcat.addWebapp("/bkvm", bkvmDirectory.getAbsolutePath());
-                                    WebappLoader loader = new WebappLoader(Thread.currentThread().getContextClassLoader());
+                                    WebappLoader loader = new WebappLoader();
                                     context.setLoader(loader);
                                 }
                             }

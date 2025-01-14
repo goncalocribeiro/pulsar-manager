@@ -14,7 +14,7 @@
 package org.apache.pulsar.manager.service;
 
 import org.apache.pulsar.manager.entity.EnvironmentEntity;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 public interface EnvironmentCacheService {
 

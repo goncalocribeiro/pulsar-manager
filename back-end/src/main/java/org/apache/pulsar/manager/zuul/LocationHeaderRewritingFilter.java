@@ -13,29 +13,27 @@
  */
 package org.apache.pulsar.manager.zuul;
 
-import com.netflix.util.Pair;
-import com.netflix.zuul.ZuulFilter;
-import com.netflix.zuul.context.RequestContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cloud.netflix.zuul.filters.Route;
-import org.springframework.cloud.netflix.zuul.filters.RouteLocator;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.server.ServletServerHttpRequest;
+import org.springframework.cloud.gateway.filter.GatewayFilter;
+import org.springframework.cloud.gateway.filter.GatewayFilterChain;
+import org.springframework.cloud.gateway.route.Route;
+import org.springframework.cloud.gateway.route.RouteLocator;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Component;
+import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 import org.springframework.web.util.UrlPathHelper;
+import reactor.core.publisher.Mono;
 
 import java.net.URI;
-
-import static org.springframework.cloud.netflix.zuul.filters.support.FilterConstants.*;
 
 /**
  * Handle http redirection.
  */
 @Component
-public class LocationHeaderRewritingFilter extends ZuulFilter {
+public class LocationHeaderRewritingFilter implements GatewayFilter {
 
     private final UrlPathHelper urlPathHelper = new UrlPathHelper();
 
@@ -55,67 +53,58 @@ public class LocationHeaderRewritingFilter extends ZuulFilter {
         this.routeLocator = routeLocator;
     }
 
-    @Override
-    public String filterType() {
-        return POST_TYPE;
-    }
-
-    @Override
-    public int filterOrder() {
-        return SEND_RESPONSE_FILTER_ORDER - 100;
-    }
-
     private static final String LOCATION_HEADER = "Location";
 
-    @Override
-    public boolean shouldFilter() {
-        RequestContext ctx = RequestContext.getCurrentContext();
-        int statusCode = ctx.getResponseStatusCode();
-        return HttpStatus.valueOf(statusCode).is3xxRedirection();
-    }
-
-    @Override
-    public Object run() {
-        RequestContext ctx = RequestContext.getCurrentContext();
-
-        Route route = routeLocator.getMatchingRoute(
-                urlPathHelper.getPathWithinApplication(ctx.getRequest()));
-        if (route != null) {
-            Pair<String, String> lh = locationHeader(ctx);
-            if (lh != null) {
-                String location = lh.second();
-                URI originalRequestUri = UriComponentsBuilder
-                        .fromHttpRequest(new ServletServerHttpRequest(ctx.getRequest()))
-                        .build().toUri();
-                UriComponentsBuilder redirectedUriBuilder = UriComponentsBuilder
-                        .fromUriString(location);
-
-                UriComponents redirectedUriComps = redirectedUriBuilder.build();
-
-                String modifiedLocation = redirectedUriBuilder
-                        .scheme(scheme)
-                        .host(host)
-                        .port(port).replacePath(redirectedUriComps.getPath())
-                        .queryParam("redirect", true)
-                        .queryParam("redirect.scheme", redirectedUriComps.getScheme())
-                        .queryParam("redirect.host", redirectedUriComps.getHost())
-                        .queryParam("redirect.port", redirectedUriComps.getPort())
-                        .toUriString();
-                lh.setSecond(modifiedLocation);
-            }
-        }
-        return null;
-    }
-
-    private Pair<String, String> locationHeader(RequestContext ctx) {
-        if (ctx.getZuulResponseHeaders() != null) {
-            for (Pair<String, String> pair : ctx.getZuulResponseHeaders()) {
-                if (pair.first().equals(LOCATION_HEADER)) {
-                    return pair;
+    public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
+        // Proceed only if the response status is 3xx redirection
+        return chain.filter(exchange).then(Mono.defer(() -> {
+            HttpStatusCode status = exchange.getResponse().getStatusCode();
+            if (status != null && status.is3xxRedirection()) {
+                String location = exchange.getResponse().getHeaders().getFirst(LOCATION_HEADER);
+                if (location != null) {
+                    return rewriteLocation(location, exchange);
                 }
             }
-        }
-        return null;
+            return Mono.empty();
+        }));
     }
 
+    private Mono<Void> rewriteLocation(String location, ServerWebExchange exchange) {
+        // Get the matching route for the current path
+        return routeLocator.getRoutes()
+                .flatMap(route -> {
+                    // Apply the AsyncPredicate asynchronously and get the result
+                    return Mono.from(route.getPredicate().apply(exchange))
+                            .filter(Boolean::booleanValue) // Keep only true results
+                            .flatMap(predicateMatch -> {
+                                // Modify location if route matches
+                                String modifiedLocation = modifyLocation(location, exchange, route);
+                                exchange.getResponse().getHeaders().set(LOCATION_HEADER, modifiedLocation);
+                                return Mono.empty();
+                            });
+                })
+                .defaultIfEmpty(Mono.fromRunnable(() -> {
+                    // Fallback: if no matching route, leave the location unchanged
+                    exchange.getResponse().getHeaders().set(LOCATION_HEADER, location);
+                }))
+                .then(); // Indicate the end of the operation (returns Mono<Void>)
+    }
+
+    private String modifyLocation(String location, ServerWebExchange exchange, Route route) {
+        UriComponents redirectedUriComps = UriComponentsBuilder.fromUriString(location).build();
+
+        // Build the modified URI with the desired host, scheme, and port
+        UriComponentsBuilder redirectedUriBuilder = UriComponentsBuilder
+                .fromUriString(location)
+                .scheme(scheme)
+                .host(host)
+                .port(port)
+                .replacePath(redirectedUriComps.getPath())
+                .queryParam("redirect", true)
+                .queryParam("redirect.scheme", redirectedUriComps.getScheme())
+                .queryParam("redirect.host", redirectedUriComps.getHost())
+                .queryParam("redirect.port", redirectedUriComps.getPort());
+
+        return redirectedUriBuilder.toUriString();
+    }
 }

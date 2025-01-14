@@ -154,6 +154,7 @@ dependencies {
     testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: springBootVersion
     testImplementation group: 'org.mockito', name: 'mockito-core', version: mockitoVersion
     implementation 'jakarta.servlet:jakarta.servlet-api:5.0.0'
+    implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-gateway', version: springCloudGatewayVersion
 
     constraints {
         implementation("org.bouncycastle:bcprov-jdk15on:${bouncycastleVersion}")

@@ -19,7 +19,7 @@ import com.netflix.zuul.context.RequestContext;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
